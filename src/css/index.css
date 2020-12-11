@@ -1,0 +1,342 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-y: scroll;
+  
+    background-color: #282f42;
+  
+}
+
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.Panels{
+  width:33%;
+  min-height: 1000px;
+  margin-left:5px;
+}
+
+
+.MainContainer {
+  display: flex;
+  justify-content: space-between;
+  top: 100px;
+
+}
+
+.topDistance{
+  top: 100px
+}
+
+
+.storyPanelSection{
+  min-height:1000px;
+  padding-left:10px;
+ margin-bottom:400px;
+  
+}
+
+.activePanel{
+  background: rgba(40, 47, 66, 0.9);
+  color: white;
+}
+
+.inactivePanel{
+ /* background: lightgray;*/
+  color: darkgrey;
+}
+
+.navbar {
+  overflow: hidden;
+  background-color: #333;
+  position: fixed; /* Set the navbar to fixed position */
+  top: 0; /* Position the navbar at the top of the page */
+  width: 100%; /* Full width */
+  z-index: 100;
+  height:45px;
+  vertical-align: center;
+}
+
+#typeNav {
+  top:45px
+}
+
+#typeNav .navItem {
+  height:35px;
+  margin-top:5px;
+  text-align:center;
+  line-height:35px;
+  margin-right:10px;
+}
+
+.typeSelectionLabel {
+  color: lightgrey;
+  margin-right: 10px;
+  height:35px;
+  margin-top:12px
+}
+
+.navItem {
+  float: left;
+  display: block;
+  color: #f2f2f2;
+  text-align: center;
+  text-decoration: none;
+  line-height:45px;
+  
+  margin-right:20px;
+  min-width: 50px;
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+  
+}
+
+/* Change background on mouse-over */
+#yearNav .navItem:hover {
+  background: #ddd;
+  color: black;
+}
+
+.navItemActive {
+  background: #ddd;
+  color: black;
+}
+/*scrollbar */
+.Panels::-webkit-scrollbar {
+  width: 12px;
+}
+
+.Panels::-webkit-scrollbar-thumb {
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+  background: white;
+  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+  box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+}
+
+.Panels::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+  box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+}
+
+
+.active {
+  color:white;
+  opacity: 1 !important;
+}
+
+.popup{
+  background: white;
+  color: black;
+  opacity: 0.9;
+  font-size: small;
+  font-family: 'Times New Roman', Times, serif
+}
+
+.globeContainer {
+
+  min-height: 1000px;
+  margin: 0;
+  position: fixed;
+  right:0;
+  height:100%;
+  top: 40px;
+  right:20px;
+}
+
+
+.centered {
+  text-align: center;
+}
+
+
+.sectiontitle {
+  
+  color: white;
+  background-color: #282f42;
+  border: 1.5px solid #c6e7fa;
+  -moz-box-shadow:    3px 2px 0px 0px #c6e7fa;
+  -webkit-box-shadow: 3px 2px 0px 0px #c6e7fa;
+  box-shadow:         3px 2px 0px 0px #c6e7fa;
+  z-index: 9;
+  position: -webkit-sticky;
+  position: sticky;
+  top:100px;
+  width: 30%;
+  text-align:center;
+  /*top:40px;*/
+}
+
+.year {
+  height: 800px;
+  
+  /* z-index: 3; */
+}
+
+.scrolltext {
+  z-index: 4;
+  opacity: 0.4;
+  margin-bottom:400px
+}
+
+/* clearfix for sticky elements */
+
+.sticky:before,
+.sticky:after {
+    content: '';
+    display: table;
+}
+
+
+#nav ul {
+  list-style: none;
+  position: absolute;
+  right: 20px;
+  top: calc(50% - 100px);
+  z-index: 8;
+}
+
+#nav li {
+  position: relative;
+  display: block;
+  margin: 8px 0;
+	width: 8px;
+	height: 8px;
+	cursor: pointer;
+}
+
+#nav li a {
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	outline: none;
+	border-radius: 50%;
+	background-color: #fff;
+	background-color: rgba(255,255,255,0.2);
+	text-indent: -999em;
+	cursor: pointer; /* make the text accessible to screen readers */
+  position: absolute;
+  border-bottom: none;
+  -webkit-transition: -webkit-transform 0.3s ease, background-color 0.3s ease;
+	transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+#nav li span {
+  float: right;
+}
+
+.nav-label {
+  margin-right: 14px;
+  margin-top: 0.5px;
+  line-height: 9.5px;
+  font-size: 9px;
+  color: #f3f3f3;
+  visibility: hidden;
+  opacity: 0.9;
+}
+
+#nav li.current .nav-label {
+  visibility: visible;
+}
+
+#nav li a:hover {
+	background-color: rgba(255,255,255,0.8);
+}
+
+#nav li.current a {
+	background-color: rgba(255,255,255,0.8);
+	-webkit-transform: scale(1.4);
+	transform: scale(1.4);
+}
+
+
+.title {
+  display: inline-block;
+}
+
+
+
+#bar-chart {
+  position: absolute;
+}
+
+#stacked-bar {
+  height: 80px;
+  width: 100%;
+}
+
+
+
+.units {
+  font-size: 0.7em;
+}
+
+ /* nb tried getting rid of bright blue highlight but seems to be impossible without using something other than <select> or a  plugin */
+
+#selectorType:hover {
+  background-color: #282f42;
+}
+
+
+/* style the map tooltip */
+
+.popupDiv {
+  color: #F3F3DD;
+  background-color: #242a3a;
+  max-width: 250px;
+  padding: 12px;
+  border-radius: 5pt;
+}
+
+.popupInfo {
+  padding-left: 5px;
+  padding-right: 5px
+}
+.popupDiv p {
+  font-family: "PT Sans", sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  margin-block-start: 0.2em;
+  margin-block-end: 0.2em;
+  
+}
+
+/*NAVITEM COLOURS
+
+   "Coal", "#ced1cc",
+                        "Storage", "#4e80e5",
+                        "Solar", "#ffc83e",
+                        "Hydro", "#43cfef",
+                        "Wind", "#00a98e",
+                        "Biomass", "#A7B734",
+                        "Solar2", "#ea545c",
+                        "Gas", "#cc9b7a",
+                        "Waste", "#6b4b06",
+                        */
+
+
+.
+
+.blackWriting {
+  color: black;
+}
+.popupHeading {
+  margin-bottom: 2px
+}
+/* change colour of tip to match popup */
+
