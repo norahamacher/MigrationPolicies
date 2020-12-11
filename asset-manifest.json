@@ -1,22 +1,22 @@
 {
   "files": {
-    "main.css": "/migration-policies/static/css/main.77536761.chunk.css",
-    "main.js": "/migration-policies/static/js/main.291ca08b.chunk.js",
-    "main.js.map": "/migration-policies/static/js/main.291ca08b.chunk.js.map",
-    "runtime-main.js": "/migration-policies/static/js/runtime-main.c39d6027.js",
-    "runtime-main.js.map": "/migration-policies/static/js/runtime-main.c39d6027.js.map",
-    "static/js/2.5f690657.chunk.js": "/migration-policies/static/js/2.5f690657.chunk.js",
-    "static/js/2.5f690657.chunk.js.map": "/migration-policies/static/js/2.5f690657.chunk.js.map",
-    "index.html": "/migration-policies/index.html",
-    "precache-manifest.5f4a7f50ae018890b830ac567a3e567d.js": "/migration-policies/precache-manifest.5f4a7f50ae018890b830ac567a3e567d.js",
-    "service-worker.js": "/migration-policies/service-worker.js",
-    "static/css/main.77536761.chunk.css.map": "/migration-policies/static/css/main.77536761.chunk.css.map",
-    "static/js/2.5f690657.chunk.js.LICENSE.txt": "/migration-policies/static/js/2.5f690657.chunk.js.LICENSE.txt"
+    "main.css": "/MigrationPolicies/static/css/main.77536761.chunk.css",
+    "main.js": "/MigrationPolicies/static/js/main.a455bf60.chunk.js",
+    "main.js.map": "/MigrationPolicies/static/js/main.a455bf60.chunk.js.map",
+    "runtime-main.js": "/MigrationPolicies/static/js/runtime-main.c538584b.js",
+    "runtime-main.js.map": "/MigrationPolicies/static/js/runtime-main.c538584b.js.map",
+    "static/js/2.1b27397e.chunk.js": "/MigrationPolicies/static/js/2.1b27397e.chunk.js",
+    "static/js/2.1b27397e.chunk.js.map": "/MigrationPolicies/static/js/2.1b27397e.chunk.js.map",
+    "index.html": "/MigrationPolicies/index.html",
+    "precache-manifest.42252a35cb5519097e1a089973057ce3.js": "/MigrationPolicies/precache-manifest.42252a35cb5519097e1a089973057ce3.js",
+    "service-worker.js": "/MigrationPolicies/service-worker.js",
+    "static/css/main.77536761.chunk.css.map": "/MigrationPolicies/static/css/main.77536761.chunk.css.map",
+    "static/js/2.1b27397e.chunk.js.LICENSE.txt": "/MigrationPolicies/static/js/2.1b27397e.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.c39d6027.js",
-    "static/js/2.5f690657.chunk.js",
+    "static/js/runtime-main.c538584b.js",
+    "static/js/2.1b27397e.chunk.js",
     "static/css/main.77536761.chunk.css",
-    "static/js/main.291ca08b.chunk.js"
+    "static/js/main.a455bf60.chunk.js"
   ]
 }
