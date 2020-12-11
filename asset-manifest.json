@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/MigrationPolicies/static/css/main.77536761.chunk.css",
-    "main.js": "/MigrationPolicies/static/js/main.a455bf60.chunk.js",
-    "main.js.map": "/MigrationPolicies/static/js/main.a455bf60.chunk.js.map",
+    "main.js": "/MigrationPolicies/static/js/main.d93ab9b4.chunk.js",
+    "main.js.map": "/MigrationPolicies/static/js/main.d93ab9b4.chunk.js.map",
     "runtime-main.js": "/MigrationPolicies/static/js/runtime-main.c538584b.js",
     "runtime-main.js.map": "/MigrationPolicies/static/js/runtime-main.c538584b.js.map",
     "static/js/2.1b27397e.chunk.js": "/MigrationPolicies/static/js/2.1b27397e.chunk.js",
     "static/js/2.1b27397e.chunk.js.map": "/MigrationPolicies/static/js/2.1b27397e.chunk.js.map",
     "index.html": "/MigrationPolicies/index.html",
-    "precache-manifest.42252a35cb5519097e1a089973057ce3.js": "/MigrationPolicies/precache-manifest.42252a35cb5519097e1a089973057ce3.js",
+    "precache-manifest.0b71652b7cfb5b8691cbc4ead9228c7d.js": "/MigrationPolicies/precache-manifest.0b71652b7cfb5b8691cbc4ead9228c7d.js",
     "service-worker.js": "/MigrationPolicies/service-worker.js",
     "static/css/main.77536761.chunk.css.map": "/MigrationPolicies/static/css/main.77536761.chunk.css.map",
     "static/js/2.1b27397e.chunk.js.LICENSE.txt": "/MigrationPolicies/static/js/2.1b27397e.chunk.js.LICENSE.txt"
@@ -17,6 +17,6 @@
     "static/js/runtime-main.c538584b.js",
     "static/js/2.1b27397e.chunk.js",
     "static/css/main.77536761.chunk.css",
-    "static/js/main.a455bf60.chunk.js"
+    "static/js/main.d93ab9b4.chunk.js"
   ]
 }
