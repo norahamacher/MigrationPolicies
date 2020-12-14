@@ -1,6 +1,6 @@
 {
-  "homepage": "http://norahamacher.github.io/migration-policies",
-  "name": "migration-policies",
+  "homepage": "http://norahamacher.github.io/MigrationPolicies",
+  "name": "MigrationPolicies",
   "version": "0.1.0",
   "private": false,
   "dependencies": {

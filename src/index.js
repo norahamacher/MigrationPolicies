@@ -19,7 +19,8 @@ class ScrollyTeller extends Component {
 
 
     m_debug = true
-    m_percentageCalcs = []
+
+
     updateDimensions = () => {
         this.setState({ width: window.innerWidth, height: window.innerHeight, panelHeight: window.innerHeight - 100 });
 
@@ -35,7 +36,10 @@ class ScrollyTeller extends Component {
         activeId: 0,
         panelHeight: 800,
         minYear: 1945,
-        maxYear:2020
+        maxYear: 2020,
+        pointOfView: null,
+        autoRotate: true,
+        highlightCountries: []
 
     }
     panelChanged = false
@@ -51,7 +55,7 @@ class ScrollyTeller extends Component {
             sectiondata.sections[i].renderparagraphs = this.createPanelContent(sectiondata.sections[i].year, sectiondata.sections[i].paragraphs)
 
         }
-       //   console.log(sectiondata.sections[4].renderparagraphs)
+        //   console.log(sectiondata.sections[4].renderparagraphs)
         //read the content from file.
         this.setState({
             sections: sectiondata.sections
@@ -66,7 +70,7 @@ class ScrollyTeller extends Component {
     }
     allPanels = []
     setActiveID = (id) => {
-   //     console.log(id)
+        //     console.log(id)
         this.setState({
             activeId: id
 
@@ -77,10 +81,15 @@ class ScrollyTeller extends Component {
 
         //read the text from somewhere based on the given year
         var result = [];
-        var filter = "";
+        
         var key = ""
         for (var i = 0; i < paragraphs.length; i++) {
             key = year + "_" + i
+            var highlightFilter = {
+                "objects": []
+            }
+            var filter = "";
+        
             //check for features like links, if its a link, replace the "text" with a hyperlinnk to the "url"
             if (paragraphs[i].features) {
                 for (var j = 0; j < paragraphs[i].features.length; j++) {
@@ -95,33 +104,28 @@ class ScrollyTeller extends Component {
             if (paragraphs[i].actions) {
                 for (j = 0; j < paragraphs[i].actions.length; j++) {
                     var action = paragraphs[i].actions[j]
-                    if (action.highlight) {
-                        if (action.highlight.type === "type") {
-                            filter = {
+                    if (action["highlight"] !== undefined) {
+            
 
-                                "action": this.setActiveMulti,
-                                "objects": []
-                            }
-                        } else if (action.highlight.type === "plant") {
-                            filter = {
-
-                                "action": this.setActiveName,
-                                "objects": []
-                            }
-                        }
                         //highlight means highlight the words in the text with a class of the same name, and filter things on the map of this name
                         for (var k = 0; k < action.highlight.keywords.length; k++) {
-                            paragraphs[i].text = paragraphs[i].text.replace(action.highlight.keywords[k], "<span class='" + action.highlight.keywords[k] + "'>" + action.highlight.keywords[k] + "</span>")
-                            filter.objects.push(this.cap(action.highlight.keywords[k]))
+                       //     console.log(action.highlight.keywords[k])
+                            paragraphs[i].text = paragraphs[i].text.replace(action.highlight.keywords[k], "<span class='bold'>" + action.highlight.keywords[k] + "</span>")
+                            highlightFilter.objects.push(this.cap(action.highlight.keywords[k]))
 
                             //capitalise first letter otherwise the filter breaks 
                         }
-                    }
+                    } 
+                    if (action["panTo"] !== undefined) {
+                        filter = {
+                            "country": action.panTo
+                        }
+                    } 
                 }
-            }
 
+            }
             result.push(
-                <div content={paragraphs[i]} id={key} actionFilter={filter} />
+                <div content={paragraphs[i]} id={key} panToFilter={filter} highlightFilter={highlightFilter} />
             )
         }
 
@@ -129,11 +133,39 @@ class ScrollyTeller extends Component {
 
     }
 
-    updateYears(min,max){
-    //    console.log("update years: " + min + "   " + max)
+    m_countryLocations = {
+        "Israel": { "lat": 31.0461, "lon": 34.8516 },
+        "Europe": { "lat": 54.5260, "lon": 15.2551 },
+        "China-Japan": { "lat": 35.8617, "lon": 124.1954 }
+    }
+    panToCountry = (country) => {
+        console.log(country)
+        if (country !== undefined && country!==null) {
+            console.log("should pan to country: " + country)
+
+            this.setState({
+                pointOfView: { "lat": this.m_countryLocations[country].lat, "lon": this.m_countryLocations[country].lon, "altitude": 1.8, "ms":1000 },
+                autoRotate:false
+            })
+        }  else {
+            this.setState({
+                pointOfView:null
+            
+            })
+        }
+    }
+    highlightObjects(objects) {
+        //highlight countries on the globe
+        console.log(objects)
+        this.setState({
+            highlightCountries: objects
+        })
+    }
+    updateYears(min, max) {
+        //    console.log("update years: " + min + "   " + max)
         this.setState({
             minYear: min,
-            maxYear:max
+            maxYear: max
         })
     }
     //capitalise the first letter of  string
@@ -146,18 +178,18 @@ class ScrollyTeller extends Component {
             <div className="App">
 
                 <div className="MainContainer">
-                <div className="navbar" id="yearNav">
-                    {this.state.sections.map(
-                        (section, i) =>
-                            <NavMenuItem
-                                key={i}
-                                id={i}
-                                chapter={section.chapter}
-                                name={section.title}
-                                activeId={this.state.activeId}
-                            />
-                    )}
-                </div>
+                    <div className="navbar" id="yearNav">
+                        {this.state.sections.map(
+                            (section, i) =>
+                                <NavMenuItem
+                                    key={i}
+                                    id={i}
+                                    chapter={section.chapter}
+                                    name={section.title}
+                                    activeId={this.state.activeId}
+                                />
+                        )}
+                    </div>
                     <div className="Panels topDistance" style={{ height: this.state.panelHeight }}>
 
                         {this.state.sections.map(
@@ -174,10 +206,11 @@ class ScrollyTeller extends Component {
                                 />
                         )}
                     </div>
-                    {this.state.width}
-                    <GlobeFunctions width={parseInt(this.state.width / 2)} minYear = {this.state.minYear} maxYear={this.state.maxYear} />
+
+                    <GlobeFunctions highlightCountries = {this.state.highlightCountries} autoRotate={this.state.autoRotate} pointOfView={this.state.pointOfView} width={parseInt(this.state.width / 2)} minYear={this.state.minYear} maxYear={this.state.maxYear} />
 
                 </div>
+                <h2 className="yearParagraph">{this.state.minYear + " - " + this.state.maxYear}</h2>
             </div>
         );
     }
@@ -193,13 +226,15 @@ const NavMenuItem = ({ id, name, chapter, activeId }) => (
         <div className={`navItem ${id === activeId ? "navItemActive" : ""} `}> {name} </div>
     </ScrollIntoView>
 )
-const { useState, useEffect, useMemo } = React;
+const { useState, useEffect, useRef } = React;
 
 
-const GlobeFunctions = ({ width, minYear, maxYear }) => {
+const GlobeFunctions = ({ width, minYear, maxYear, pointOfView, autoRotate, highlightCountries}) => {
 
     const [countries, setCountries] = useState({ features: [] });
     const [hoverD, setHoverD] = useState();
+
+    const globeEl = useRef()
 
     useEffect(() => {
         // load data
@@ -209,29 +244,37 @@ const GlobeFunctions = ({ width, minYear, maxYear }) => {
         }).then(setCountries);
     }, []);
 
-    const colorScale = d3.scaleSequentialSqrt(d3.interpolateYlOrRd);
-    const getVal = feat => feat.properties.GDP_MD_EST / Math.max(1e5, feat.properties.POP_EST);
+   /* useEffect(() => {
+        // Auto-rotate
+        console.log(autoRotate)
+        globeEl.current.controls().autoRotate = {autoRotate};
+        globeEl.current.controls().autoRotateSpeed = 0.7;
+      }, []);
+*/
+    useEffect(() => {
+        if(pointOfView!==null)  {
+            globeEl.current.pointOfView({ lat: pointOfView.lat, lng: pointOfView.lon, altitude: pointOfView.altitude}, pointOfView.ms )
+            
+        } else {
+            globeEl.current.pointOfView( )
+        }
+     //   console.log(autoRotate)
+     //   console.log(pointOfView)
+        globeEl.current.controls().autoRotate= hoverD ? false : {autoRotate}
+    })
 
-    const maxVal = useMemo(
-        () => Math.max(...countries.features.map(getVal)),
-        [countries]
-    );
-
-
-    colorScale.domain([0, maxVal]);
-
-
-
+   
     return <div className="globeContainer">
 
         <Globe
+            ref={globeEl}
             width={width}
-            globeImageUrl="//unpkg.com/three-globe/example/img/earth-night.jpg"
-            backgroundImageUrl="//unpkg.com/three-globe/example/img/night-sky.png"
-
+            globeImageUrl="//unpkg.com/three-globe@2.11.1/example/img/earth-day.jpg"
+            // backgroundImageUrl="//unpkg.com/three-globe/example/img/night-sky.png"
+            backgroundColor="white"
             polygonsData={countries.features.filter(d => d.properties.ISO_A2 !== 'AQ')}
             polygonAltitude={d => d === hoverD ? 0.10 : 0.03}
-            polygonCapColor={d => hasActivePolicyInYear(d.properties.migrationpolicies, minYear, maxYear) ? "pink" : "grey"}
+            polygonCapColor={d=>hasActivePolicyInYear(d.properties.migrationpolicies, minYear, maxYear) ?  highlightCountries.indexOf(d.properties.ADMIN) > -1 ? "green" : "pink" : "grey"}
             polygonSideColor={() => 'rgba(0, 100, 0, 0.15)'}
             polygonStrokeColor={() => '#111'}
             polygonLabel={({ properties: d }) => `
@@ -241,6 +284,9 @@ const GlobeFunctions = ({ width, minYear, maxYear }) => {
       `}
             onPolygonHover={setHoverD}
             polygonsTransitionDuration={300}
+    
+
+
         />
     </div>
 
@@ -248,13 +294,13 @@ const GlobeFunctions = ({ width, minYear, maxYear }) => {
 
 /*Type of institution":"Ministry","Institution Overview"*/
 
- const getPolicyText = (policies, minYear, maxYear) => {
+const getPolicyText = (policies, minYear, maxYear) => {
     if (policies) {
         for (let i = 0; i < policies.length; i++) {
             let start = policies[i]["Year of establishment"]
             let end = policies[i]["Year of disestablishment"]
             if (start !== "Nil" && start !== undefined && end !== undefined) {
-                if ((parseInt(start.substr(0,4)) <= maxYear) && ( (end === "Nil") || (parseInt(end.substr(0, 4)) > minYear) ) ) {
+                if ((parseInt(start.substr(0, 4)) <= maxYear) && ((end === "Nil") || (parseInt(end.substr(0, 4)) > minYear))) {
                     let str = "<b>Institution Name:</b> " + policies[i]["Institution name"] + "<br />"
                     str += "<b>Institution Overview:</b> " + policies[i]["Institution Overview"] + "<br />"
                     str += "<b> Year of establishment: </b> " + policies[i]["Year of establishment"] + "<br />"
@@ -276,11 +322,11 @@ const hasActivePolicyInYear = (policies, minYear, maxYear) => {
         for (let i = 0; i < policies.length; i++) {
             let start = policies[i]["Year of establishment"]
             let end = policies[i]["Year of disestablishment"]
-  
+
             if (start !== "Nil" && start !== undefined && end !== undefined) {
 
-                if ((parseInt(start.substr(0,4)) <= maxYear) && ( (end === "Nil") || (parseInt(end.substr(0, 4)) > minYear) ) ) {
-                    console.log("has active Policy")
+                if ((parseInt(start.substr(0, 4)) <= maxYear) && ((end === "Nil") || (parseInt(end.substr(0, 4)) > minYear))) {
+       //             console.log("has active Policy")
                     return true
                 }
             }

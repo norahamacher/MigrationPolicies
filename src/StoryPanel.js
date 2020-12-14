@@ -29,7 +29,7 @@ export default class StoryPanel extends Component {
     var res = [];
     for (var i = 0; i < this.props.paragraphs.length; i++) {
       res.push(
-        { "text": this.props.paragraphs[i].props.content.text, "filter": this.props.paragraphs[i].props.actionFilter}
+        { "text": this.props.paragraphs[i].props.content.text, "filter": this.props.paragraphs[i].props.actionFilter }
       )
 
 
@@ -46,29 +46,31 @@ export default class StoryPanel extends Component {
   render() {
 
     return (
-      <section  id={"section_" + this.state.id} className={`storyPanelSection ${this.state.visible && this.state.id === this.props.activeID ? 'activePanel' : 'inactivePanel'}`} >
+      <section id={"section_" + this.state.id} className={`storyPanelSection ${this.state.visible && this.state.id === this.props.activeID ? 'activePanel' : 'inactivePanel'}`} >
         <Observer onChange={this.headerHandleChange}
           threshold={1}
         >
 
-          <h1 id={"chap_" + this.props.chapter} className={`sticky sectiontitle`}>{this.props.title}</h1>
+          <h1 id={"chap_" + this.props.chapter} className={`sticky sectiontitle`} />
+
         </Observer>
 
         <div className="panelcontent">
           {this.props.paragraphs.map(
             (paragraph, i) =>
-             
-                <StoryParagraph
-                  key={"chap_" + this.props.chapter + "_id_p" + i}
-                  id={"chap_" + this.props.chapter + "_id_p" + i}
-                  paragraph={paragraph.props.content.text}
-                  actionFilter={paragraph.props.actionFilter}
-                  yearStart={paragraph.props.content.minYear}
-                  yearEnd={paragraph.props.content.maxYear}
-                  app = {this.props.app}
 
-                />
-         
+              <StoryParagraph
+                key={"chap_" + this.props.chapter + "_id_p" + i}
+                id={"chap_" + this.props.chapter + "_id_p" + i}
+                paragraph={paragraph.props.content.text}
+                panToFilter={paragraph.props.panToFilter}
+                highlightFilter={paragraph.props.highlightFilter}
+                yearStart={paragraph.props.content.minYear}
+                yearEnd={paragraph.props.content.maxYear}
+                app={this.props.app}
+
+              />
+
           )}
         </div>
 
@@ -96,39 +98,30 @@ class StoryParagraph extends Component {
     window.removeEventListener('scroll', this.handleScroll);
   };
 
- 
-  handleScroll = (event) =>{
+
+  handleScroll = (event) => {
     //if the element is visible we check where it is on the screen, and highlight it when it enters a threshold, dehighlight when it exits.
     if (this.state.visible) {
       var topOffset = ReactDOM.findDOMNode(this).getBoundingClientRect().top
       var bottomOffset = ReactDOM.findDOMNode(this).getBoundingClientRect().bottom
-      if (!this.m_firedAction) {
-        if (this.state.highlighted) {
-          if (this.props.actionFilter) { //if this has any actions supplied
-
-            this.props.actionFilter.action(this.props.actionFilter.objects, true)
-            //   this.m_mapFunctions.setFilterTypeString(this.m_filterArray)
-            //TODO HERE this.props.actionFilter.action
-          }
-          this.m_firedAction = true;
-        } else {
-          if (this.props.actionFilter) {
-
-            this.props.actionFilter.action(null, true)
-            // this.m_mapFunctions.showAllTypes()
-            this.m_firedAction = true;
-          }
-        }
-      }
-      if ((topOffset > 80 && topOffset < 600) || (topOffset < 150 && topOffset > 0 && bottomOffset > 300)) {
+ 
+      if ((topOffset > 80 && topOffset < 400) ) {
         //if this paragraph has anactionFilter to it, apply it!
         if (!this.state.highlighted) {
           this.setState({
             highlighted: true
           })
-       //   console.log(this.props.yearStart)
+          //   console.log(this.props.yearStart)
           this.props.app.updateYears(this.props.yearStart, this.props.yearEnd)
-          this.m_firedAction = false
+  
+            this.props.app.panToCountry(this.props.panToFilter.country)
+    
+            // this.m_mapFunctions.showAllTypes()
+            this.m_firedAction = true;
+          
+
+            this.props.app.highlightObjects(this.props.highlightFilter.objects)
+          
         }
 
 
@@ -141,6 +134,7 @@ class StoryParagraph extends Component {
           })
           //deactivate filter if thereisonw
           this.m_firedAction = false
+
         }
 
       }
@@ -172,16 +166,19 @@ class StoryParagraph extends Component {
 
   render() {
     return (
-      <Observer
-        onChange={this.paragraphChange}
-      >
-        <p
-          className={`scrolltext ${this.state.highlighted ? "active" : ""}`}
-          id={this.props.id}>
-          {ReactHtmlParser(this.props.paragraph)}
+ 
+        <Observer
+          onChange={this.paragraphChange}
+        >
+          <p
+            className={`scrolltext ${this.state.highlighted ? "active" : ""}`}
+            id={this.props.id}>
+            {ReactHtmlParser(this.props.paragraph)}
 
-        </p>
-      </Observer>
+          </p>
+        </Observer>
+       
+   
     )
   }
 }
