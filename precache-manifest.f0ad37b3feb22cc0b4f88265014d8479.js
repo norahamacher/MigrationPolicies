@@ -1,10 +1,10 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "65ac30ea6c16fffb67c58dadf7a6f5a2",
+    "revision": "cf02269d63cbcbd63cf52e8ddc950f86",
     "url": "/MigrationPolicies/index.html"
   },
   {
-    "revision": "8c91cacde760c7e3ef4e",
+    "revision": "e7a313c4609e7d59280d",
     "url": "/MigrationPolicies/static/css/main.e91ecc08.chunk.css"
   },
   {
@@ -16,8 +16,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/MigrationPolicies/static/js/2.b0d4e91e.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "8c91cacde760c7e3ef4e",
-    "url": "/MigrationPolicies/static/js/main.c2421f72.chunk.js"
+    "revision": "e7a313c4609e7d59280d",
+    "url": "/MigrationPolicies/static/js/main.451feaa3.chunk.js"
   },
   {
     "revision": "d75fb8ba61247fa0fff9",
