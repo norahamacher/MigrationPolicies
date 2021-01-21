@@ -16,6 +16,7 @@ code {
     monospace;
 }
 
+
 .Panels{
   width:33%;
   min-height: 1000px;
@@ -60,27 +61,23 @@ code {
   margin: auto;
   z-index: 1000;
   height:45px;
-
+  background: white;
+  margin-lefT: 14px;
 }
 
 
- .navItem {
-  height:35px;
-  margin-top:5px;
-  text-align:center;
-  line-height:35px;
-  margin-right:10px;
-}
 
 
 .navItem {
+  padding-left: 2px;
+  padding-right:2px;
   float: left;
   display: block;
   text-align: center;
   text-decoration: none;
   line-height:35px;
-  
   margin-right:20px;
+  margin-top:2px;
   min-width: 50px;
   -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */
@@ -163,9 +160,22 @@ code {
 
   position: -webkit-sticky;
   position: sticky;
-  top:100px;
+  top:50px;
   width: 30%;
   text-align:center;
+  background-color: darkgrey;
+  border: 1.5px solid grey;
+  -moz-box-shadow:    3px 2px 0px 0px grey;
+  -webkit-box-shadow: 3px 2px 0px 0px grey;
+  box-shadow:         3px 2px 0px 0px grey;
+  color:white;
+  z-index:10000;
+  text-align: center;
+  text-decoration: none;
+  line-height:35px;
+  margin-right:20px;
+  margin-top:2px;
+  min-width: 50px;
   /*top:40px;*/
 }
 
@@ -222,7 +232,6 @@ code {
 }
 
 .yearParagraph {
-  position: fixed;
-  top: 60px;
+
   right: 23%;
 }

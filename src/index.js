@@ -11,7 +11,7 @@ import sectiondata from './playdata/sections.json'
 import ScrollIntoView from 'react-scroll-into-view'
 //import Stackedbarchart from './stacked-bar.js'
 //import GlobeFunctions from './GlobeFunctions.js'
-
+import * as helper from './Helper.js'
 import * as d3 from 'd3'
 import Globe from 'react-globe.gl'
 import { isElementOfType } from 'react-dom/test-utils';
@@ -50,7 +50,7 @@ class ScrollyTeller extends Component {
     UNSAFE_componentWillMount = function () {
         window.addEventListener('resize', this.updateDimensions);
         this.updateDimensions()
-        var i
+        let i
         for (i = 0; i < sectiondata.sections.length; i++) {
             sectiondata.sections[i].renderparagraphs = this.createPanelContent(sectiondata.sections[i].year, sectiondata.sections[i].paragraphs)
 
@@ -70,30 +70,29 @@ class ScrollyTeller extends Component {
     }
     allPanels = []
     setActiveID = (id) => {
-        //     console.log(id)
+
         this.setState({
             activeId: id
-
         })
     }
 
     createPanelContent(year, paragraphs) {
 
         //read the text from somewhere based on the given year
-        var result = [];
-        
-        var key = ""
-        for (var i = 0; i < paragraphs.length; i++) {
+        let result = [];
+
+        let key = ""
+        for (let i = 0; i < paragraphs.length; i++) {
             key = year + "_" + i
-            var highlightFilter = {
+            let highlightFilter = {
                 "objects": []
             }
-            var filter = "";
-        
+            let panToFilter = "";
+            let animate = false
             //check for features like links, if its a link, replace the "text" with a hyperlinnk to the "url"
             if (paragraphs[i].features) {
-                for (var j = 0; j < paragraphs[i].features.length; j++) {
-                    var feature = paragraphs[i].features[j]
+                for (let j = 0; j < paragraphs[i].features.length; j++) {
+                    let feature = paragraphs[i].features[j]
                     if (feature.type === "link") {
                         paragraphs[i].text = paragraphs[i].text.replace(feature.text, '<a href="' + feature.url + '" target="_blank">' + feature.text + '</a>')
                         //                console.log(paragraphs[i].text)
@@ -102,63 +101,77 @@ class ScrollyTeller extends Component {
             }
             //if actions aredefined, they are added to the element here.
             if (paragraphs[i].actions) {
-                for (j = 0; j < paragraphs[i].actions.length; j++) {
-                    var action = paragraphs[i].actions[j]
+                for (let j = 0; j < paragraphs[i].actions.length; j++) {
+                    let action = paragraphs[i].actions[j]
                     if (action["highlight"] !== undefined) {
-            
+
 
                         //highlight means highlight the words in the text with a class of the same name, and filter things on the map of this name
-                        for (var k = 0; k < action.highlight.keywords.length; k++) {
-                       //     console.log(action.highlight.keywords[k])
+                        for (let k = 0; k < action.highlight.keywords.length; k++) {
+                            //     console.log(action.highlight.keywords[k])
                             paragraphs[i].text = paragraphs[i].text.replace(action.highlight.keywords[k], "<span class='bold'>" + action.highlight.keywords[k] + "</span>")
                             highlightFilter.objects.push(this.cap(action.highlight.keywords[k]))
 
                             //capitalise first letter otherwise the filter breaks 
                         }
-                    } 
+                    }
                     if (action["panTo"] !== undefined) {
-                        filter = {
+                        panToFilter = {
                             "country": action.panTo
                         }
-                    } 
+                    }
+
+                    if (action["animation"] !== undefined) {
+                        animate = true
+                    }
                 }
 
             }
             result.push(
-                <div content={paragraphs[i]} id={key} panToFilter={filter} highlightFilter={highlightFilter} />
+                <div content={paragraphs[i]} id={key} animation={animate} panToFilter={panToFilter} highlightFilter={highlightFilter} />
             )
         }
-
+        console.log(result)
         return result
 
     }
 
-    m_countryLocations = {
-        "Israel": { "lat": 31.0461, "lon": 34.8516 },
-        "Europe": { "lat": 54.5260, "lon": 15.2551 },
-        "China-Japan": { "lat": 35.8617, "lon": 124.1954 }
-    }
+
     panToCountry = (country) => {
-        console.log(country)
-        if (country !== undefined && country!==null) {
+        if (country !== undefined && country !== null) {
             console.log("should pan to country: " + country)
 
             this.setState({
-                pointOfView: { "lat": this.m_countryLocations[country].lat, "lon": this.m_countryLocations[country].lon, "altitude": 1.8, "ms":1000 },
-                autoRotate:false
+                pointOfView: { "lat": helper.getLocation(country).lat, "lon": helper.getLocation(country).lon, "altitude": 1, "ms": 1000 },
+                autoRotate: false,
+                animation: false
             })
-        }  else {
+        } else {
             this.setState({
-                pointOfView:null
-            
+                pointOfView: null,
+                autoRotate: true
+
             })
         }
     }
     highlightObjects(objects) {
         //highlight countries on the globe
-        console.log(objects)
         this.setState({
             highlightCountries: objects
+        })
+    }
+
+    doChapterAnimation(objects) {
+        console.log("chapterAnimation")
+        this.setState({
+            animation: true,
+            highlightCountries: objects
+        })
+    }
+
+    stopAnimation = () => {
+        this.setState({
+            animation: false
         })
     }
     updateYears(min, max) {
@@ -203,14 +216,15 @@ class ScrollyTeller extends Component {
                                     title={section.title}
                                     chapter={section.chapter}
                                     paragraphs={section.renderparagraphs}
+                                    period={section.period}
                                 />
                         )}
                     </div>
 
-                    <GlobeFunctions highlightCountries = {this.state.highlightCountries} autoRotate={this.state.autoRotate} pointOfView={this.state.pointOfView} width={parseInt(this.state.width / 2)} minYear={this.state.minYear} maxYear={this.state.maxYear} />
+                    <GlobeFunctions animation={this.state.animation} animCallback={this.stopAnimation} highlightCountries={this.state.highlightCountries} autoRotate={this.state.autoRotate} pointOfView={this.state.pointOfView} width={parseInt(this.state.width / 2)} minYear={this.state.minYear} maxYear={this.state.maxYear} />
 
                 </div>
-                <h2 className="yearParagraph">{this.state.minYear + " - " + this.state.maxYear}</h2>
+
             </div>
         );
     }
@@ -228,13 +242,23 @@ const NavMenuItem = ({ id, name, chapter, activeId }) => (
 )
 const { useState, useEffect, useRef } = React;
 
-
-const GlobeFunctions = ({ width, minYear, maxYear, pointOfView, autoRotate, highlightCountries}) => {
+const NOPOLICY = "rgba(0,0,0,0.0)"
+const HIGHLIGHT_WITH_POLICY = "rgba(222,235,247,0.9)"
+const HIGHLIGHT_NO_POLICY = "rgba(222,235,247,0.7)"
+const ACTIVE_POLICY_ESTABLISHED_IN_PERIOD = "rgba(158,202,225,0.3)"
+const ACTIVE_HISTORICAL_POLICY = "rgba(49,130,189,0.5)"
+const POLYGON_SIDE_COLOR = "rgba(0, 100, 0, 0.15)"
+const POLYGON_SIDE_COLOR_HIGHLIGHT ="rgba(0, 100, 0, 0.7)"
+const ANIMATION_HIGHLIGHT_COLOR = "rgb(70,102,255)"
+let lastPoint = null
+let once = true;
+const GlobeFunctions = ({ width, minYear, maxYear, pointOfView, animation, animCallback, highlightCountries }) => {
 
     const [countries, setCountries] = useState({ features: [] });
     const [hoverD, setHoverD] = useState();
-
+    const [animationHighlightCountry,setHighlightCountry] = useState("");
     const globeEl = useRef()
+    
 
     useEffect(() => {
         // load data
@@ -242,28 +266,72 @@ const GlobeFunctions = ({ width, minYear, maxYear, pointOfView, autoRotate, high
             console.log(response);
             return response.json();
         }).then(setCountries);
+
+
     }, []);
 
-   /* useEffect(() => {
-        // Auto-rotate
-        console.log(autoRotate)
-        globeEl.current.controls().autoRotate = {autoRotate};
-        globeEl.current.controls().autoRotateSpeed = 0.7;
-      }, []);
-*/
+    const sleep = ms => {
+        return new Promise(resolve => setTimeout(resolve, ms))
+    }
+
     useEffect(() => {
-        if(pointOfView!==null)  {
-            globeEl.current.pointOfView({ lat: pointOfView.lat, lng: pointOfView.lon, altitude: pointOfView.altitude}, pointOfView.ms )
-            
-        } else {
-            globeEl.current.pointOfView( )
+
+        if (animation && once) {
+            console.log("animatino once")
+            globeEl.current.controls().autoRotate = false
+            once = false
+            animateFunc()
+
+
+        } else if(!animation) {
+
+            console.log("other actions")
+            if (pointOfView !== null) {
+                if (lastPoint !== pointOfView) {
+                    globeEl.current.pointOfView({ lat: pointOfView.lat, lng: pointOfView.lon, altitude: pointOfView.altitude }, pointOfView.ms)
+                    globeEl.current.controls().autoRotate = false
+                    lastPoint = pointOfView
+                }
+
+            } else {
+                if (lastPoint !== null)
+                    globeEl.current.pointOfView({ lat: lastPoint.lat, lng: lastPoint.lon, altitude: 2.5 }, lastPoint.ms)
+                globeEl.current.controls().autoRotate = true
+                globeEl.current.controls().autoRotateSpeed = 1.0
+                lastPoint = null
+
+            }
         }
-     //   console.log(autoRotate)
-     //   console.log(pointOfView)
-        globeEl.current.controls().autoRotate= hoverD ? false : {autoRotate}
+
+        if (!animation) {
+            once = true
+        }
+        //   console.log(pointOfView)
+
     })
 
-   
+
+    async function animateFunc() {
+        console.log("Animationstart")
+        console.log(highlightCountries)
+
+        globeEl.current.controls().autoRotate = false
+
+        for (let i = 0; i < highlightCountries.length; i++) {
+            console.log(animationHighlightCountry)
+            setHighlightCountry(highlightCountries[i])
+           panToLocation(helper.getLocation(highlightCountries[i]).lat,helper.getLocation(highlightCountries[i]).lon)
+            await sleep(1000)
+        }
+        animCallback()
+        once = false
+        setHighlightCountry("")
+
+    }
+
+    function panToLocation(lat,lon){
+        globeEl.current.pointOfView({ lat: lat, lng: lon, "altitude": 1}, 1000)
+    }
     return <div className="globeContainer">
 
         <Globe
@@ -273,23 +341,63 @@ const GlobeFunctions = ({ width, minYear, maxYear, pointOfView, autoRotate, high
             // backgroundImageUrl="//unpkg.com/three-globe/example/img/night-sky.png"
             backgroundColor="white"
             polygonsData={countries.features.filter(d => d.properties.ISO_A2 !== 'AQ')}
-            polygonAltitude={d => d === hoverD ? 0.10 : 0.03}
-            polygonCapColor={d=>hasActivePolicyInYear(d.properties.migrationpolicies, minYear, maxYear) ?  highlightCountries.indexOf(d.properties.ADMIN) > -1 ? "green" : "pink" : "grey"}
-            polygonSideColor={() => 'rgba(0, 100, 0, 0.15)'}
-            polygonStrokeColor={() => '#111'}
+            polygonAltitude={d => animationHighlightCountry === d.properties.ADMIN ? 0.1 : hasActivePolicyInPeriod(d.properties.migrationpolicies, minYear, maxYear) ? d === hoverD ? 0.06 : 0.01 : 0.004}
+            polygonCapColor={d => animationHighlightCountry === d.properties.ADMIN ? ANIMATION_HIGHLIGHT_COLOR :
+                highlightCountries.indexOf(d.properties.ADMIN) > -1 ?
+                hasActivePolicyInPeriod(d.properties.migrationpolicies, minYear, maxYear) ?
+                    HIGHLIGHT_WITH_POLICY : HIGHLIGHT_NO_POLICY : getColor(d.properties.migrationpolicies, minYear, maxYear)}
+            polygonSideColor={d => animationHighlightCountry === d.properties.ADMIN ? POLYGON_SIDE_COLOR_HIGHLIGHT :  POLYGON_SIDE_COLOR}
+            polygonStrokeColor={d => hasActivePolicyInPeriod(d.properties.migrationpolicies, minYear, maxYear) ? '#111' : 'lightgrey'}
             polygonLabel={({ properties: d }) => `
-        <div class="popup"><b>${d.ADMIN} (${d.ISO_A2}):</b> <br />
+        <div class="popup"><b>${d.ADMIN} (${d.ISO_A2})</b> <br />
         ${getPolicyText(d.migrationpolicies, minYear, maxYear)}
         </div>
       `}
             onPolygonHover={setHoverD}
             polygonsTransitionDuration={300}
-    
+
+
 
 
         />
     </div>
 
+}
+
+const getColor = (policies, minYear, maxYear, year) => {
+
+    if (policies) {
+
+        for (let i = 0; i < policies.length; i++) {
+            let startPolicy = policies[i]["Year of establishment"]
+            let endPolicy = policies[i]["Year of disestablishment"]
+
+            if (startPolicy !== "Nil" && startPolicy !== undefined && endPolicy !== undefined) {
+
+                if ((parseInt(startPolicy.substr(0, 4)) <= maxYear) && ((endPolicy === "Nil") || (parseInt(endPolicy.substr(0, 4)) > minYear))) {
+                    //             console.log("has active Policy")
+                    if (parseInt(startPolicy.substr(0, 4)) < minYear) {
+                        return ACTIVE_HISTORICAL_POLICY  //active policy established before the period
+                    } else {
+                        return ACTIVE_POLICY_ESTABLISHED_IN_PERIOD
+                    }
+                } else {
+                    //no active policy
+                    return NOPOLICY
+                }
+            }
+        }
+    }
+    return NOPOLICY
+    //if we want to highlight this country as "being talked about in this period"  "rgba(34,139,34,0.7)"
+
+
+    // if a country has an active policy in this period, established BEFORE: "rgba(219,112,147,0.7)"
+
+    //if a country established a policy within this period: "blue"
+
+
+    //no active policy: transparent
 }
 
 /*Type of institution":"Ministry","Institution Overview"*/
@@ -313,9 +421,11 @@ const getPolicyText = (policies, minYear, maxYear) => {
 
     return ""
 }
+
+
 /*"Year of establishment":"1992","Year of disestablishment":"1996"*/
 
-const hasActivePolicyInYear = (policies, minYear, maxYear) => {
+const hasActivePolicyInPeriod = (policies, minYear, maxYear) => {
     //console.log("...")
     if (policies) {
 
@@ -326,7 +436,7 @@ const hasActivePolicyInYear = (policies, minYear, maxYear) => {
             if (start !== "Nil" && start !== undefined && end !== undefined) {
 
                 if ((parseInt(start.substr(0, 4)) <= maxYear) && ((end === "Nil") || (parseInt(end.substr(0, 4)) > minYear))) {
-       //             console.log("has active Policy")
+                    //             console.log("has active Policy")
                     return true
                 }
             }

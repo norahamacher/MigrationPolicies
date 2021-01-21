@@ -12,17 +12,7 @@ export default class StoryPanel extends Component {
     paragraphs: []
   };
 
-  headerHandleChange = event => {
 
-    if (event.isIntersecting && this.props.id !== this.props.activeID) {  //this element scrolled into view
-      this.props.app.setActiveID(this.props.id)
-    }
-
-    this.setState({
-      visible: this.props.id === this.props.activeID
-
-    });
-  };
 
 
   componentDidMount() {
@@ -47,13 +37,12 @@ export default class StoryPanel extends Component {
 
     return (
       <section id={"section_" + this.state.id} className={`storyPanelSection ${this.state.visible && this.state.id === this.props.activeID ? 'activePanel' : 'inactivePanel'}`} >
-        <Observer onChange={this.headerHandleChange}
-          threshold={1}
-        >
+    
 
-          <h1 id={"chap_" + this.props.chapter} className={`sticky sectiontitle`} />
+         {this.props.period[0]!==0 ?
+          <div id={"chap_" + this.props.chapter} className={`sticky sectiontitle`}> {this.props.period[0]} - { this.props.period[1]}</div>
 
-        </Observer>
+         :""}
 
         <div className="panelcontent">
           {this.props.paragraphs.map(
@@ -65,9 +54,12 @@ export default class StoryPanel extends Component {
                 paragraph={paragraph.props.content.text}
                 panToFilter={paragraph.props.panToFilter}
                 highlightFilter={paragraph.props.highlightFilter}
+                animation = {paragraph.props.animation}
                 yearStart={paragraph.props.content.minYear}
                 yearEnd={paragraph.props.content.maxYear}
+                updatePeriod = { this.props.period[0]===0}
                 app={this.props.app}
+                id = {this.props.id}
 
               />
 
@@ -103,24 +95,25 @@ class StoryParagraph extends Component {
     //if the element is visible we check where it is on the screen, and highlight it when it enters a threshold, dehighlight when it exits.
     if (this.state.visible) {
       var topOffset = ReactDOM.findDOMNode(this).getBoundingClientRect().top
-      var bottomOffset = ReactDOM.findDOMNode(this).getBoundingClientRect().bottom
- 
+
       if ((topOffset > 80 && topOffset < 400) ) {
         //if this paragraph has anactionFilter to it, apply it!
         if (!this.state.highlighted) {
+          if(this.props.animation === true && !this.m_firedAction) {
+            this.props.app.doChapterAnimation(this.props.highlightFilter.objects)
+            this.m_firedAction = true
+          }
+         
           this.setState({
             highlighted: true
           })
+          this.props.app.highlightObjects(this.props.highlightFilter.objects)
+          this.props.app.setActiveID(this.props.id)
           //   console.log(this.props.yearStart)
           this.props.app.updateYears(this.props.yearStart, this.props.yearEnd)
-  
-            this.props.app.panToCountry(this.props.panToFilter.country)
-    
-            // this.m_mapFunctions.showAllTypes()
-            this.m_firedAction = true;
           
-
-            this.props.app.highlightObjects(this.props.highlightFilter.objects)
+          if(this.props.panToFilter)
+            this.props.app.panToCountry(this.props.panToFilter.country)
           
         }
 
@@ -134,7 +127,6 @@ class StoryParagraph extends Component {
           })
           //deactivate filter if thereisonw
           this.m_firedAction = false
-
         }
 
       }
@@ -166,10 +158,15 @@ class StoryParagraph extends Component {
 
   render() {
     return (
- 
+      <div>
+      {this.props.updatePeriod ? 
+          <div className={`sticky sectiontitle`}> {this.props.yearStart} - { this.props.yearEnd}</div>
+      : 
+      ""}
         <Observer
           onChange={this.paragraphChange}
         >
+
           <p
             className={`scrolltext ${this.state.highlighted ? "active" : ""}`}
             id={this.props.id}>
@@ -177,7 +174,7 @@ class StoryParagraph extends Component {
 
           </p>
         </Observer>
-       
+        </div>
    
     )
   }
